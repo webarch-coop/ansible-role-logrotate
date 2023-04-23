@@ -4,7 +4,7 @@
 
 An Ansible role to configure logrotate on Debian and Ubuntu.
 
-Currentky all this role does is check the configuration.
+Currently all this role does is check the configuration.
 
 ## Role Variables
 
