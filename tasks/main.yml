@@ -27,9 +27,26 @@
         var: logrotate_find
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
 
-    # - name: Ensure that all files in /etc/logrotate.d are mode 0644
+    - name: Ensure that all files in /etc/logrotate.d are mode 0644
+      ansible.builtin.file:
+        path: "{{ logrotate_file.path }}"
+        mode: "0644"
+        owner: root
+        group: root
+      when: logrotate_file.mode != "0644"
+      loop: "{{ logrotate_find.files }}"
+      loop_control:
+        loop_var: logrotate_file
+        label: "{{ logrotate_file.path | basename }}"
 
-    # - name: Check logrotate config using /usr/sbin/logrotate -d for all files
+    - name: Check logrotate config using /usr/sbin/logrotate -d for all files
+      ansible.builtin.command: "/usr/sbin/logrotate -d {{ logrotate_file.path }}"
+      check_mode: false
+      changed_when: false
+      loop: "{{ logrotate_find.files }}"
+      loop_control:
+        loop_var: logrotate_file
+        label: "{{ logrotate_file.path | basename }}"
 
   when:
     - logrotate is defined
